@@ -1,384 +1,593 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pattern A — Slack Pop Office</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@500;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --aubergine: #3f0e40;
-      --aubergine-2: #5b2c6f;
-      --white: #ffffff;
-      --bg: #f8f4ff;
-      --ink: #1d1c1d;
-      --muted: #616061;
-      --line: #e8e0f0;
-      --pink: #ff2d78;
-      --orange: #ff8a00;
-      --yellow: #ffe14d;
-      --lime: #7cff6b;
-      --cyan: #19d4ff;
-      --violet: #7b5cff;
-      --hover: #f6edff;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; }
-    body {
-      font-family: "Noto Sans JP", "Inter", sans-serif;
-      background: #d9c7f0;
-      color: var(--ink);
-    }
-    .mockbar {
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      background: #2b0b2d;
-      color: #fff;
-    }
-    .mockbar b { font-family: Inter, sans-serif; letter-spacing: .02em; }
-    .tabs { display: flex; gap: 8px; }
-    .tabs button {
-      border: 0;
-      background: transparent;
-      color: #f3d9ff;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .tabs button.active { background: #fff; color: #3f0e40; }
-    .screen { display: none; height: calc(100vh - 52px); }
-    .screen.active { display: block; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pattern A — Slack Pop Office</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --aubergine: #3f0e40;
+        --aubergine-2: #5b2c6f;
+        --white: #ffffff;
+        --bg: #f8f4ff;
+        --ink: #1d1c1d;
+        --muted: #616061;
+        --line: #e8e0f0;
+        --pink: #ff2d78;
+        --orange: #ff8a00;
+        --yellow: #ffe14d;
+        --lime: #7cff6b;
+        --cyan: #19d4ff;
+        --violet: #7b5cff;
+        --hover: #f6edff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        font-family: "Noto Sans JP", "Inter", sans-serif;
+        background: #d9c7f0;
+        color: var(--ink);
+      }
+      .mockbar {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        background: #2b0b2d;
+        color: #fff;
+      }
+      .mockbar b {
+        font-family: Inter, sans-serif;
+        letter-spacing: 0.02em;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+      }
+      .tabs button {
+        border: 0;
+        background: transparent;
+        color: #f3d9ff;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: #fff;
+        color: #3f0e40;
+      }
+      .screen {
+        display: none;
+        height: calc(100vh - 52px);
+      }
+      .screen.active {
+        display: block;
+      }
 
-    /* Title */
-    .title {
-      height: 100%;
-      background:
-        radial-gradient(circle at 15% 20%, #ffe14d 0 80px, transparent 81px),
-        radial-gradient(circle at 85% 10%, #19d4ff 0 70px, transparent 71px),
-        radial-gradient(circle at 80% 80%, #ff2d78 0 110px, transparent 111px),
-        radial-gradient(circle at 10% 85%, #7cff6b 0 90px, transparent 91px),
-        #fff;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-    .title-card {
-      width: min(880px, 100%);
-      background: #fff;
-      border: 4px solid #1d1c1d;
-      border-radius: 28px;
-      box-shadow: 10px 10px 0 #7b5cff;
-      padding: 36px 40px 32px;
-    }
-    .eyebrow {
-      display: inline-block;
-      background: var(--yellow);
-      border: 2px solid #1d1c1d;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-weight: 900;
-      font-size: 12px;
-    }
-    h1 { font-size: 56px; margin: 12px 0 8px; letter-spacing: -.04em; }
-    .lead { color: var(--muted); margin: 0 0 28px; font-size: 16px; }
-    .diffs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .diff {
-      border: 3px solid #1d1c1d;
-      border-radius: 18px;
-      padding: 16px;
-      cursor: pointer;
-      background: #fff;
-    }
-    .diff:nth-child(1) { background: #eaffea; }
-    .diff:nth-child(2) { background: #fff4d6; }
-    .diff:nth-child(3) { background: #ffe4f0; }
-    .diff strong { display: block; font-size: 18px; margin-bottom: 4px; }
-    .diff span { font-size: 13px; color: #444; }
-    .title-actions { margin-top: 22px; display: flex; gap: 10px; }
-    .btn {
-      border: 3px solid #1d1c1d;
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-weight: 900;
-      background: var(--pink);
-      color: #fff;
-      cursor: pointer;
-    }
-    .btn.ghost { background: #fff; color: #1d1c1d; }
+      /* Title */
+      .title {
+        height: 100%;
+        background:
+          radial-gradient(circle at 15% 20%, #ffe14d 0 80px, transparent 81px),
+          radial-gradient(circle at 85% 10%, #19d4ff 0 70px, transparent 71px),
+          radial-gradient(circle at 80% 80%, #ff2d78 0 110px, transparent 111px),
+          radial-gradient(circle at 10% 85%, #7cff6b 0 90px, transparent 91px), #fff;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .title-card {
+        width: min(880px, 100%);
+        background: #fff;
+        border: 4px solid #1d1c1d;
+        border-radius: 28px;
+        box-shadow: 10px 10px 0 #7b5cff;
+        padding: 36px 40px 32px;
+      }
+      .eyebrow {
+        display: inline-block;
+        background: var(--yellow);
+        border: 2px solid #1d1c1d;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-weight: 900;
+        font-size: 12px;
+      }
+      h1 {
+        font-size: 56px;
+        margin: 12px 0 8px;
+        letter-spacing: -0.04em;
+      }
+      .lead {
+        color: var(--muted);
+        margin: 0 0 28px;
+        font-size: 16px;
+      }
+      .diffs {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .diff {
+        border: 3px solid #1d1c1d;
+        border-radius: 18px;
+        padding: 16px;
+        cursor: pointer;
+        background: #fff;
+      }
+      .diff:nth-child(1) {
+        background: #eaffea;
+      }
+      .diff:nth-child(2) {
+        background: #fff4d6;
+      }
+      .diff:nth-child(3) {
+        background: #ffe4f0;
+      }
+      .diff strong {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+      .diff span {
+        font-size: 13px;
+        color: #444;
+      }
+      .title-actions {
+        margin-top: 22px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn {
+        border: 3px solid #1d1c1d;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 900;
+        background: var(--pink);
+        color: #fff;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: #fff;
+        color: #1d1c1d;
+      }
 
-    /* Slack chrome */
-    .slack {
-      height: 100%;
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      background: #fff;
-    }
-    .side {
-      background: linear-gradient(180deg, var(--aubergine), var(--aubergine-2));
-      color: #f8e9ff;
-      padding: 16px 12px;
-    }
-    .ws { font-weight: 900; font-size: 18px; margin-bottom: 18px; }
-    .ch {
-      padding: 7px 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      opacity: .85;
-    }
-    .ch.on { background: #7b5cff; color: #fff; opacity: 1; font-weight: 800; }
-    .pill {
-      display: inline-block;
-      background: #ff2d78;
-      color: #fff;
-      border-radius: 999px;
-      font-size: 10px;
-      padding: 1px 6px;
-      margin-left: 6px;
-    }
-    .main { display: grid; grid-template-rows: 56px 1fr auto; min-width: 0; }
-    .top {
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 18px;
-    }
-    .salary {
-      background: #1d1c1d;
-      color: var(--yellow);
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-family: Inter, sans-serif;
-      font-weight: 800;
-    }
-    .msgs { padding: 18px; overflow: auto; background: #fff; }
-    .msg { display: grid; grid-template-columns: 40px 1fr; gap: 10px; margin-bottom: 16px; }
-    .av {
-      width: 40px; height: 40px; border-radius: 10px;
-      display: grid; place-items: center; font-weight: 900; color: #1d1c1d;
-      border: 2px solid #1d1c1d;
-    }
-    .name { font-weight: 800; font-size: 14px; }
-    .time { color: var(--muted); font-size: 12px; margin-left: 6px; font-weight: 500; }
-    .text { margin: 4px 0 0; line-height: 1.6; }
-    .composer-wrap { padding: 12px 16px 16px; }
-    .prompt {
-      background: #f4edff;
-      border: 2px dashed #7b5cff;
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    .prompt code { background: #fff; padding: 1px 6px; border-radius: 6px; }
-    .composer {
-      border: 2px solid #c9b7e0;
-      border-radius: 12px;
-      padding: 10px 12px 12px;
-    }
-    .target { font-size: 15px; margin-bottom: 8px; }
-    .roma { font-family: Inter, monospace; letter-spacing: .02em; }
-    .roma .ok { color: #1aa35a; }
-    .roma .now { background: var(--yellow); border-radius: 4px; }
-    .roma .yet { color: #9a96a3; }
-    .bar { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; color: var(--muted); font-size: 12px; }
+      /* Slack chrome */
+      .slack {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        background: #fff;
+      }
+      .side {
+        background: linear-gradient(180deg, var(--aubergine), var(--aubergine-2));
+        color: #f8e9ff;
+        padding: 16px 12px;
+      }
+      .ws {
+        font-weight: 900;
+        font-size: 18px;
+        margin-bottom: 18px;
+      }
+      .ch {
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        opacity: 0.85;
+      }
+      .ch.on {
+        background: #7b5cff;
+        color: #fff;
+        opacity: 1;
+        font-weight: 800;
+      }
+      .pill {
+        display: inline-block;
+        background: #ff2d78;
+        color: #fff;
+        border-radius: 999px;
+        font-size: 10px;
+        padding: 1px 6px;
+        margin-left: 6px;
+      }
+      .main {
+        display: grid;
+        grid-template-rows: 56px 1fr auto;
+        min-width: 0;
+      }
+      .top {
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+      }
+      .salary {
+        background: #1d1c1d;
+        color: var(--yellow);
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-family: Inter, sans-serif;
+        font-weight: 800;
+      }
+      .msgs {
+        padding: 18px;
+        overflow: auto;
+        background: #fff;
+      }
+      .msg {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .av {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        color: #1d1c1d;
+        border: 2px solid #1d1c1d;
+      }
+      .name {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .time {
+        color: var(--muted);
+        font-size: 12px;
+        margin-left: 6px;
+        font-weight: 500;
+      }
+      .text {
+        margin: 4px 0 0;
+        line-height: 1.6;
+      }
+      .composer-wrap {
+        padding: 12px 16px 16px;
+      }
+      .prompt {
+        background: #f4edff;
+        border: 2px dashed #7b5cff;
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .prompt code {
+        background: #fff;
+        padding: 1px 6px;
+        border-radius: 6px;
+      }
+      .composer {
+        border: 2px solid #c9b7e0;
+        border-radius: 12px;
+        padding: 10px 12px 12px;
+      }
+      .target {
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+      .roma {
+        font-family: Inter, monospace;
+        letter-spacing: 0.02em;
+      }
+      .roma .ok {
+        color: #1aa35a;
+      }
+      .roma .now {
+        background: var(--yellow);
+        border-radius: 4px;
+      }
+      .roma .yet {
+        color: #9a96a3;
+      }
+      .bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
 
-    /* Result / analysis reuse slack-ish cards */
-    .plain {
-      height: 100%;
-      background: var(--bg);
-      padding: 28px;
-      overflow: auto;
-    }
-    .result-hero {
-      background: #fff;
-      border: 4px solid #1d1c1d;
-      border-radius: 24px;
-      box-shadow: 8px 8px 0 #ff2d78;
-      padding: 28px;
-      margin-bottom: 16px;
-    }
-    .yen { font-size: 64px; margin: 8px 0; font-family: Inter, sans-serif; letter-spacing: -.04em; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .stat {
-      background: #fff;
-      border: 3px solid #1d1c1d;
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .stat:nth-child(1) { background: #fff4d6; }
-    .stat:nth-child(2) { background: #e7fff3; }
-    .stat:nth-child(3) { background: #ffe4f0; }
-    .stat:nth-child(4) { background: #e7f7ff; }
-    .stat b { display: block; font-size: 26px; }
-    .panel {
-      background: #fff;
-      border: 3px solid #1d1c1d;
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
-    .finger { display: flex; gap: 8px; flex-wrap: wrap; }
-    .fg {
-      flex: 1;
-      min-width: 90px;
-      border-radius: 12px;
-      padding: 10px;
-      border: 2px solid #1d1c1d;
-      background: #fff;
-    }
-    .fg.hot { background: #ffd0e2; }
-  </style>
-</head>
-<body>
-  <div class="mockbar">
-    <b>A · Slack Pop Office</b>
-    <div class="tabs">
-      <button class="active" data-screen="title">タイトル</button>
-      <button data-screen="play">プレイ</button>
-      <button data-screen="result">結果</button>
-      <button data-screen="analysis">分析</button>
+      /* Result / analysis reuse slack-ish cards */
+      .plain {
+        height: 100%;
+        background: var(--bg);
+        padding: 28px;
+        overflow: auto;
+      }
+      .result-hero {
+        background: #fff;
+        border: 4px solid #1d1c1d;
+        border-radius: 24px;
+        box-shadow: 8px 8px 0 #ff2d78;
+        padding: 28px;
+        margin-bottom: 16px;
+      }
+      .yen {
+        font-size: 64px;
+        margin: 8px 0;
+        font-family: Inter, sans-serif;
+        letter-spacing: -0.04em;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .stat {
+        background: #fff;
+        border: 3px solid #1d1c1d;
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .stat:nth-child(1) {
+        background: #fff4d6;
+      }
+      .stat:nth-child(2) {
+        background: #e7fff3;
+      }
+      .stat:nth-child(3) {
+        background: #ffe4f0;
+      }
+      .stat:nth-child(4) {
+        background: #e7f7ff;
+      }
+      .stat b {
+        display: block;
+        font-size: 26px;
+      }
+      .panel {
+        background: #fff;
+        border: 3px solid #1d1c1d;
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--line);
+      }
+      .finger {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fg {
+        flex: 1;
+        min-width: 90px;
+        border-radius: 12px;
+        padding: 10px;
+        border: 2px solid #1d1c1d;
+        background: #fff;
+      }
+      .fg.hot {
+        background: #ffd0e2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mockbar">
+      <b>A · Slack Pop Office</b>
+      <div class="tabs">
+        <button class="active" data-screen="title">タイトル</button>
+        <button data-screen="play">プレイ</button>
+        <button data-screen="result">結果</button>
+        <button data-screen="analysis">分析</button>
+      </div>
+      <a href="index.html" style="color: #fff; font-weight: 700">一覧へ</a>
     </div>
-    <a href="index.html" style="color:#fff;font-weight:700;">一覧へ</a>
-  </div>
 
-  <section class="screen active" id="title">
-    <div class="title">
-      <div class="title-card">
-        <span class="eyebrow">株式会社トラブルベース 公式トレーニング</span>
-        <h1>返信打</h1>
-        <p class="lead">届いたチャットに、ローマ字で返信して送れ。給料が年収になる。</p>
-        <div class="diffs">
-          <div class="diff"><strong>初級 · 新米エンジニア</strong><span>短い了解と、ちょっとしたカタカナ。</span></div>
-          <div class="diff"><strong>中級 · 慣れてきた人</strong><span>メンション、PR、調子に乗る一文。</span></div>
-          <div class="diff"><strong>上級 · つよつよ</strong><span>複数行、引用、絶対的な自信。</span></div>
-        </div>
-        <div class="title-actions">
-          <button class="btn" data-goto="play">はじめる</button>
-          <button class="btn ghost" data-goto="analysis">分析を見る</button>
+    <section class="screen active" id="title">
+      <div class="title">
+        <div class="title-card">
+          <span class="eyebrow">株式会社トラブルベース 公式トレーニング</span>
+          <h1>返信打</h1>
+          <p class="lead">届いたチャットに、ローマ字で返信して送れ。給料が年収になる。</p>
+          <div class="diffs">
+            <div class="diff">
+              <strong>初級 · 新米エンジニア</strong><span>短い了解と、ちょっとしたカタカナ。</span>
+            </div>
+            <div class="diff">
+              <strong>中級 · 慣れてきた人</strong><span>メンション、PR、調子に乗る一文。</span>
+            </div>
+            <div class="diff">
+              <strong>上級 · つよつよ</strong><span>複数行、引用、絶対的な自信。</span>
+            </div>
+          </div>
+          <div class="title-actions">
+            <button class="btn" data-goto="play">はじめる</button>
+            <button class="btn ghost" data-goto="analysis">分析を見る</button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="screen" id="play">
-    <div class="slack">
-      <aside class="side">
-        <div class="ws">トラブルベース</div>
-        <div class="ch"># general</div>
-        <div class="ch on"># web-app-dev <span class="pill">急</span></div>
-        <div class="ch"># incident</div>
-        <div class="ch"># customer</div>
-        <div class="ch"># random</div>
-      </aside>
-      <div class="main">
-        <div class="top">
-          <div><b># web-app-dev</b> <span style="color:#888;font-size:13px;">本番が静かじゃない</span></div>
-          <div class="salary">推定年収  ¥2,480,000</div>
-        </div>
-        <div class="msgs">
-          <div class="msg">
-            <div class="av" style="background:#19d4ff">佐</div>
+    <section class="screen" id="play">
+      <div class="slack">
+        <aside class="side">
+          <div class="ws">トラブルベース</div>
+          <div class="ch"># general</div>
+          <div class="ch on"># web-app-dev <span class="pill">急</span></div>
+          <div class="ch"># incident</div>
+          <div class="ch"># customer</div>
+          <div class="ch"># random</div>
+        </aside>
+        <div class="main">
+          <div class="top">
             <div>
-              <div><span class="name">佐藤 · PM</span><span class="time">11:02</span></div>
-              <div class="text">PR #123 のレビューお願いできますか？今日中だと超助かります。</div>
+              <b># web-app-dev</b>
+              <span style="color: #888; font-size: 13px">本番が静かじゃない</span>
+            </div>
+            <div class="salary">推定年収 ¥2,480,000</div>
+          </div>
+          <div class="msgs">
+            <div class="msg">
+              <div class="av" style="background: #19d4ff">佐</div>
+              <div>
+                <div><span class="name">佐藤 · PM</span><span class="time">11:02</span></div>
+                <div class="text">PR #123 のレビューお願いできますか？今日中だと超助かります。</div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av" style="background: #7cff6b">あ</div>
+              <div>
+                <div><span class="name">あなた</span><span class="time">11:03</span></div>
+                <div class="text">
+                  確認します。少々お待ちください。先にハートリアクトだけ置いときます。
+                </div>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="av" style="background: #ffe14d">高</div>
+              <div>
+                <div><span class="name">高橋 · QA</span><span class="time">11:04</span></div>
+                <div class="text">@you stg の決済、タイムアウト増えてます。再現はまだです。</div>
+              </div>
             </div>
           </div>
-          <div class="msg">
-            <div class="av" style="background:#7cff6b">あ</div>
-            <div>
-              <div><span class="name">あなた</span><span class="time">11:03</span></div>
-              <div class="text">確認します。少々お待ちください。先にハートリアクトだけ置いときます。</div>
-            </div>
-          </div>
-          <div class="msg">
-            <div class="av" style="background:#ffe14d">高</div>
-            <div>
-              <div><span class="name">高橋 · QA</span><span class="time">11:04</span></div>
-              <div class="text">@you stg の決済、タイムアウト増えてます。再現はまだです。</div>
+          <div class="composer-wrap">
+            <div class="prompt">このメッセージに返信する　<code>+ ¥186,000</code> が目安</div>
+            <div class="composer">
+              <div class="target">
+                見ます。一旦切り分けして、<b>#incident</b>
+                に共有します。僕の勘ですがキャッシュが悪さしてそうです（勘です）。
+              </div>
+              <div class="roma">
+                <span class="ok">mimasu. ittan kiriwake site, #incident ni</span>
+                <span class="now"> </span>
+                <span class="yet"
+                  >kyouyuu simasu. boku no kan desuga cache ga warusa sitesou desu (kan desu).</span
+                >
+              </div>
+              <div class="bar"><span>正確に打つと送信されます</span><span>コンボ 24</span></div>
             </div>
           </div>
         </div>
-        <div class="composer-wrap">
-          <div class="prompt">このメッセージに返信する　<code>+ ¥186,000</code> が目安</div>
-          <div class="composer">
-            <div class="target">見ます。一旦切り分けして、<b>#incident</b> に共有します。僕の勘ですがキャッシュが悪さしてそうです（勘です）。</div>
-            <div class="roma">
-              <span class="ok">mimasu. ittan kiriwake site, #incident ni</span>
-              <span class="now"> </span>
-              <span class="yet">kyouyuu simasu. boku no kan desuga cache ga warusa sitesou desu (kan desu).</span>
-            </div>
-            <div class="bar"><span>正確に打つと送信されます</span><span>コンボ 24</span></div>
+      </div>
+    </section>
+
+    <section class="screen" id="result">
+      <div class="plain">
+        <div class="result-hero">
+          <span class="eyebrow">人事評価（仮）</span>
+          <div>今回のゲーム内年収</div>
+          <div class="yen">¥4,260,000</div>
+          <div style="color: #666">中級 · 慣れてきたエンジニア　/　返信 9通　/　90秒</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>入力速度</span><b>412</b><span>タイプ/分</span></div>
+          <div class="stat"><span>正確性</span><b>96%</b><span>きれいめ</span></div>
+          <div class="stat"><span>ミス数</span><b>11</b><span>回</span></div>
+          <div class="stat"><span>最大連続</span><b>86</b><span>文字</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="analysis">
+      <div class="plain">
+        <h2 style="margin-top: 0">あなたの入力みどころ</h2>
+        <div class="panel">
+          <b>苦手キー</b>
+          <table>
+            <tr>
+              <th>キー</th>
+              <th>入力</th>
+              <th>ミス</th>
+              <th>ミス率</th>
+            </tr>
+            <tr>
+              <td>@</td>
+              <td>48</td>
+              <td>11</td>
+              <td>22.9%</td>
+            </tr>
+            <tr>
+              <td>L</td>
+              <td>210</td>
+              <td>19</td>
+              <td>9.0%</td>
+            </tr>
+            <tr>
+              <td>#</td>
+              <td>36</td>
+              <td>3</td>
+              <td>8.3%</td>
+            </tr>
+          </table>
+        </div>
+        <div class="panel">
+          <b>苦手な指</b>
+          <div class="finger" style="margin-top: 10px">
+            <div class="fg">左小指<br /><b>4.1%</b></div>
+            <div class="fg">左人差<br /><b>5.8%</b></div>
+            <div class="fg hot">右薬指<br /><b>11.2%</b></div>
+            <div class="fg">右小指<br /><b>7.4%</b></div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen" id="result">
-    <div class="plain">
-      <div class="result-hero">
-        <span class="eyebrow">人事評価（仮）</span>
-        <div>今回のゲーム内年収</div>
-        <div class="yen">¥4,260,000</div>
-        <div style="color:#666;">中級 · 慣れてきたエンジニア　/　返信 9通　/　90秒</div>
-      </div>
-      <div class="stats">
-        <div class="stat"><span>入力速度</span><b>412</b><span>タイプ/分</span></div>
-        <div class="stat"><span>正確性</span><b>96%</b><span>きれいめ</span></div>
-        <div class="stat"><span>ミス数</span><b>11</b><span>回</span></div>
-        <div class="stat"><span>最大連続</span><b>86</b><span>文字</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="screen" id="analysis">
-    <div class="plain">
-      <h2 style="margin-top:0;">あなたの入力みどころ</h2>
-      <div class="panel">
-        <b>苦手キー</b>
-        <table>
-          <tr><th>キー</th><th>入力</th><th>ミス</th><th>ミス率</th></tr>
-          <tr><td>@</td><td>48</td><td>11</td><td>22.9%</td></tr>
-          <tr><td>L</td><td>210</td><td>19</td><td>9.0%</td></tr>
-          <tr><td>#</td><td>36</td><td>3</td><td>8.3%</td></tr>
-        </table>
-      </div>
-      <div class="panel">
-        <b>苦手な指</b>
-        <div class="finger" style="margin-top:10px;">
-          <div class="fg">左小指<br><b>4.1%</b></div>
-          <div class="fg">左人差<br><b>5.8%</b></div>
-          <div class="fg hot">右薬指<br><b>11.2%</b></div>
-          <div class="fg">右小指<br><b>7.4%</b></div>
+        <div class="panel">
+          <b>苦手な動き</b>
+          <table>
+            <tr>
+              <th>遷移</th>
+              <th>回数</th>
+              <th>ミス率</th>
+            </tr>
+            <tr>
+              <td>S → H</td>
+              <td>32</td>
+              <td>18.8%</td>
+            </tr>
+            <tr>
+              <td>R → E</td>
+              <td>54</td>
+              <td>11.1%</td>
+            </tr>
+          </table>
         </div>
       </div>
-      <div class="panel">
-        <b>苦手な動き</b>
-        <table>
-          <tr><th>遷移</th><th>回数</th><th>ミス率</th></tr>
-          <tr><td>S → H</td><td>32</td><td>18.8%</td></tr>
-          <tr><td>R → E</td><td>54</td><td>11.1%</td></tr>
-        </table>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <script>
-    const show = (id) => {
-      document.querySelectorAll(".screen").forEach((el) => el.classList.toggle("active", el.id === id));
-      document.querySelectorAll(".tabs button").forEach((el) => el.classList.toggle("active", el.dataset.screen === id));
-    };
-    document.querySelectorAll("[data-screen]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.screen)));
-    document.querySelectorAll("[data-goto]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.goto)));
-  </script>
-</body>
+    <script>
+      const show = (id) => {
+        document
+          .querySelectorAll(".screen")
+          .forEach((el) => el.classList.toggle("active", el.id === id));
+        document
+          .querySelectorAll(".tabs button")
+          .forEach((el) => el.classList.toggle("active", el.dataset.screen === id));
+      };
+      document
+        .querySelectorAll("[data-screen]")
+        .forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.screen)));
+      document
+        .querySelectorAll("[data-goto]")
+        .forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.goto)));
+    </script>
+  </body>
 </html>

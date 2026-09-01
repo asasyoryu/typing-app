@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { emptyAnalysis, recordKey, topMisses } from "../game/analysis.ts";
 import { createMatcher } from "../game/romaji.ts";
 import { calcAccuracy, calcPay, calcSpeed } from "../game/score.ts";
-import type { Difficulty, PlayAnalysis, PlayResult, Puzzle, StatsResponse } from "../shared/types.ts";
+import type {
+  Difficulty,
+  PlayAnalysis,
+  PlayResult,
+  Puzzle,
+  StatsResponse,
+} from "../shared/types.ts";
 import { getAnonId } from "./anon.ts";
 
 type Screen = "title" | "play" | "result" | "analysis";
@@ -36,15 +42,14 @@ export function App() {
   const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
   const [index, setIndex] = useState(0);
-  const [messages, setMessages] = useState<Array<{ who: "them" | "me"; name: string; text: string }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{ who: "them" | "me"; name: string; text: string }>
+  >([]);
   const [typed, setTyped] = useState("");
   const [ghost, setGhost] = useState("");
   const [salary, setSalary] = useState(0);
   const [lastPay, setLastPay] = useState(0);
-  const [hits, setHits] = useState(0);
-  const [misses, setMisses] = useState(0);
   const [combo, setCombo] = useState(0);
-  const [maxCombo, setMaxCombo] = useState(0);
   const [leftMs, setLeftMs] = useState(LIMIT_MS);
   const [result, setResult] = useState<PlayResult | null>(null);
   const [stats, setStats] = useState<StatsResponse | null>(null);
@@ -117,15 +122,18 @@ export function App() {
     setIndex(0);
     setSalary(0);
     setLastPay(0);
-    setHits(0);
-    setMisses(0);
     setCombo(0);
-    setMaxCombo(0);
     setLeftMs(LIMIT_MS);
     startRef.current = Date.now();
     snapshot.current = { salary: 0, hits: 0, misses: 0, maxCombo: 0, replies: 0, difficulty: next };
     const first = list[0];
-    setMessages([{ who: "them", name: `${first.sender_name} · ${first.sender_role} · ${first.channel}`, text: first.incoming }]);
+    setMessages([
+      {
+        who: "them",
+        name: `${first.sender_name} · ${first.sender_role} · ${first.channel}`,
+        text: first.incoming,
+      },
+    ]);
     resetMatcher(first.reading);
     setScreen("play");
   };
@@ -155,28 +163,16 @@ export function App() {
       recordKey(analysisRef.current, ch, outcome === "miss", prevKeyRef.current);
       if (outcome !== "miss") prevKeyRef.current = ch;
       if (outcome === "miss") {
-        setMisses((n) => {
-          const next = n + 1;
-          snapshot.current.misses = next;
-          return next;
-        });
+        snapshot.current.misses += 1;
         puzzleMissRef.current += 1;
         setCombo(0);
         return;
       }
-      setHits((n) => {
-        const next = n + 1;
-        snapshot.current.hits = next;
-        return next;
-      });
+      snapshot.current.hits += 1;
       puzzleHitsRef.current += 1;
       setCombo((n) => {
         const next = n + 1;
-        setMaxCombo((max) => {
-          const m = Math.max(max, next);
-          snapshot.current.maxCombo = m;
-          return m;
-        });
+        snapshot.current.maxCombo = Math.max(snapshot.current.maxCombo, next);
         return next;
       });
       setTyped(matcherRef.current.getTyped());
@@ -204,7 +200,14 @@ export function App() {
         }
         const nxt = puzzles[nextIndex];
         setIndex(nextIndex);
-        setMessages((cur) => [...cur, { who: "them", name: `${nxt.sender_name} · ${nxt.sender_role} · ${nxt.channel}`, text: nxt.incoming }]);
+        setMessages((cur) => [
+          ...cur,
+          {
+            who: "them",
+            name: `${nxt.sender_name} · ${nxt.sender_role} · ${nxt.channel}`,
+            text: nxt.incoming,
+          },
+        ]);
         resetMatcher(nxt.reading);
       }
     };
@@ -232,7 +235,11 @@ export function App() {
           <p>スレッドが流れてくる。ローマ字で返して、年収を積み上げる。90秒。</p>
           <div className="cards">
             {(Object.keys(LABELS) as Difficulty[]).map((d) => (
-              <button key={d} className={`card ${LABELS[d].klass} ${difficulty === d ? "on" : ""}`} onClick={() => setDifficulty(d)}>
+              <button
+                key={d}
+                className={`card ${LABELS[d].klass} ${difficulty === d ? "on" : ""}`}
+                onClick={() => setDifficulty(d)}
+              >
                 <b>{LABELS[d].title}</b>
                 <div>{LABELS[d].sub}</div>
               </button>
@@ -256,13 +263,19 @@ export function App() {
     return (
       <div className="play">
         <div className="rail">
-          <div className="dot" style={{ background: "#ffe56a" }}>#</div>
-          <div className="dot" style={{ background: "#7b5cff", color: "#fff" }}>開</div>
-          <div className="dot" style={{ background: "#ff5aa5", color: "#fff" }}>急</div>
+          <div className="dot" style={{ background: "#ffe56a" }}>
+            #
+          </div>
+          <div className="dot" style={{ background: "#7b5cff", color: "#fff" }}>
+            開
+          </div>
+          <div className="dot" style={{ background: "#ff5aa5", color: "#fff" }}>
+            急
+          </div>
         </div>
         <div className="thread">
           <div className="salary">
-            {yen(salary)}　残り {Math.ceil(leftMs / 1000)}秒
+            {yen(salary)}　残り {Math.ceil(leftMs / 1000)}秒{combo > 0 ? `　コンボ ${combo}` : ""}
             {lastPay > 0 ? <span className="pay">+ {yen(lastPay)}</span> : null}
           </div>
           {messages.map((m, i) => (
@@ -294,15 +307,37 @@ export function App() {
             {LABELS[result.difficulty].sub} / {result.replyCount}通 / 90秒
           </p>
           <div className="stats">
-            <div className="tile">速度<br /><b>{result.speed}</b></div>
-            <div className="tile">正確性<br /><b>{result.accuracy}%</b></div>
-            <div className="tile">ミス<br /><b>{result.missCount}</b></div>
-            <div className="tile">最大連続<br /><b>{result.maxCombo}</b></div>
+            <div className="tile">
+              速度
+              <br />
+              <b>{result.speed}</b>
+            </div>
+            <div className="tile">
+              正確性
+              <br />
+              <b>{result.accuracy}%</b>
+            </div>
+            <div className="tile">
+              ミス
+              <br />
+              <b>{result.missCount}</b>
+            </div>
+            <div className="tile">
+              最大連続
+              <br />
+              <b>{result.maxCombo}</b>
+            </div>
           </div>
           <div className="row" style={{ marginTop: 20 }}>
-            <button className="cta" onClick={() => void startPlay(result.difficulty)}>もう一度</button>
-            <button className="ghost" onClick={() => void openAnalysis()}>分析を見る</button>
-            <button className="ghost" onClick={() => setScreen("title")}>タイトルへ</button>
+            <button className="cta" onClick={() => void startPlay(result.difficulty)}>
+              もう一度
+            </button>
+            <button className="ghost" onClick={() => void openAnalysis()}>
+              分析を見る
+            </button>
+            <button className="ghost" onClick={() => setScreen("title")}>
+              タイトルへ
+            </button>
           </div>
         </div>
       </div>
@@ -319,7 +354,12 @@ export function App() {
           <table>
             <tbody>
               {weakKeys.map((k) => (
-                <tr key={k.id}><td>{k.id}</td><td>{k.hits + k.misses} 回</td><td>{k.misses} ミス</td><td>{Math.round(k.rate * 1000) / 10}%</td></tr>
+                <tr key={k.id}>
+                  <td>{k.id}</td>
+                  <td>{k.hits + k.misses} 回</td>
+                  <td>{k.misses} ミス</td>
+                  <td>{Math.round(k.rate * 1000) / 10}%</td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -329,7 +369,10 @@ export function App() {
           <table>
             <tbody>
               {weakFingers.map((k) => (
-                <tr key={k.id}><td>{FINGER_JA[k.id] ?? k.id}</td><td>{Math.round(k.rate * 1000) / 10}%</td></tr>
+                <tr key={k.id}>
+                  <td>{FINGER_JA[k.id] ?? k.id}</td>
+                  <td>{Math.round(k.rate * 1000) / 10}%</td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -339,12 +382,17 @@ export function App() {
           <table>
             <tbody>
               {weakMoves.map((k) => (
-                <tr key={k.id}><td>{k.id}</td><td>{Math.round(k.rate * 1000) / 10}%</td></tr>
+                <tr key={k.id}>
+                  <td>{k.id}</td>
+                  <td>{Math.round(k.rate * 1000) / 10}%</td>
+                </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <button className="cta" onClick={() => setScreen("title")}>タイトルへ</button>
+        <button className="cta" onClick={() => setScreen("title")}>
+          タイトルへ
+        </button>
       </div>
     </div>
   );

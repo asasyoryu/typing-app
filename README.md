@@ -2,6 +2,8 @@
 
 チャット返信をローマ字で打つタイピングゲーム。仕様は `docs/specs/mvp.md`。
 
+公開 URL: https://typing-app.asasyoryu.workers.dev
+
 ```bash
 direnv allow
 just db-migrate

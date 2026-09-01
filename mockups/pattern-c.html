@@ -1,234 +1,347 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pattern C — Color Thread</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; }
-    body {
-      font-family: "Zen Maru Gothic", "Outfit", sans-serif;
-      background: #f4f1ff;
-      color: #222;
-    }
-    .mockbar {
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      background: #fff;
-      border-bottom: 1px solid #eadfff;
-    }
-    .tabs button {
-      border: 0; background: #f4f1ff; padding: 8px 12px; border-radius: 999px;
-      font-weight: 800; cursor: pointer;
-    }
-    .tabs button.active { background: #7b5cff; color: #fff; }
-    .tabs { display: flex; gap: 8px; }
-    .screen { display: none; height: calc(100vh - 52px); }
-    .screen.active { display: block; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pattern C — Color Thread</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        font-family: "Zen Maru Gothic", "Outfit", sans-serif;
+        background: #f4f1ff;
+        color: #222;
+      }
+      .mockbar {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        background: #fff;
+        border-bottom: 1px solid #eadfff;
+      }
+      .tabs button {
+        border: 0;
+        background: #f4f1ff;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: #7b5cff;
+        color: #fff;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+      }
+      .screen {
+        display: none;
+        height: calc(100vh - 52px);
+      }
+      .screen.active {
+        display: block;
+      }
 
-    .title {
-      height: 100%;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at 20% 30%, #ffe56a 0 140px, transparent 141px),
-        radial-gradient(circle at 90% 20%, #7b5cff 0 160px, transparent 161px),
-        radial-gradient(circle at 70% 90%, #ff5aa5 0 180px, transparent 181px),
-        #fff;
-    }
-    .hero { width: min(760px, 92%); }
-    h1 { font-family: Outfit, sans-serif; font-size: 72px; margin: 0; letter-spacing: -.05em; }
-    .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 28px 0; }
-    .card {
-      background: #fff;
-      border-radius: 24px;
-      padding: 16px;
-      box-shadow: 0 10px 30px rgba(123, 92, 255, .12);
-    }
-    .card:nth-child(1) { border-top: 8px solid #7cffb2; }
-    .card:nth-child(2) { border-top: 8px solid #ffd84d; }
-    .card:nth-child(3) { border-top: 8px solid #ff5aa5; }
-    .cta {
-      background: #222;
-      color: #fff;
-      border: 0;
-      border-radius: 999px;
-      padding: 12px 20px;
-      font-weight: 800;
-      cursor: pointer;
-    }
+      .title {
+        height: 100%;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at 20% 30%, #ffe56a 0 140px, transparent 141px),
+          radial-gradient(circle at 90% 20%, #7b5cff 0 160px, transparent 161px),
+          radial-gradient(circle at 70% 90%, #ff5aa5 0 180px, transparent 181px), #fff;
+      }
+      .hero {
+        width: min(760px, 92%);
+      }
+      h1 {
+        font-family: Outfit, sans-serif;
+        font-size: 72px;
+        margin: 0;
+        letter-spacing: -0.05em;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin: 28px 0;
+      }
+      .card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(123, 92, 255, 0.12);
+      }
+      .card:nth-child(1) {
+        border-top: 8px solid #7cffb2;
+      }
+      .card:nth-child(2) {
+        border-top: 8px solid #ffd84d;
+      }
+      .card:nth-child(3) {
+        border-top: 8px solid #ff5aa5;
+      }
+      .cta {
+        background: #222;
+        color: #fff;
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 20px;
+        font-weight: 800;
+        cursor: pointer;
+      }
 
-    .play {
-      height: 100%;
-      display: grid;
-      grid-template-columns: 92px minmax(0, 720px);
-      justify-content: center;
-      gap: 24px;
-      padding: 24px 24px 16px;
-    }
-    .rail { display: flex; flex-direction: column; gap: 10px; align-items: center; padding-top: 8px; }
-    .dot {
-      width: 52px; height: 52px; border-radius: 18px;
-      display: grid; place-items: center; font-weight: 900; color: #222;
-    }
-    .thread { display: flex; flex-direction: column; min-width: 0; }
-    .salary {
-      align-self: end;
-      background: #fff;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-family: Outfit, sans-serif;
-      font-weight: 800;
-      box-shadow: 0 6px 20px rgba(0,0,0,.06);
-    }
-    .bubble {
-      background: #fff;
-      border-radius: 22px;
-      padding: 14px 16px;
-      margin: 10px 0;
-      box-shadow: 0 8px 24px rgba(34, 20, 70, .06);
-    }
-    .bubble.them { border-left: 8px solid #7b5cff; }
-    .bubble.me { border-left: 8px solid #7cffb2; margin-left: 48px; }
-    .who { font-size: 12px; color: #777; font-weight: 800; }
-    .typebox {
-      margin-top: auto;
-      background: #fff;
-      border-radius: 28px;
-      padding: 16px;
-      box-shadow: 0 16px 40px rgba(123, 92, 255, .16);
-    }
-    .target { font-size: 16px; line-height: 1.6; }
-    .roma { font-family: Outfit, sans-serif; margin-top: 8px; }
-    .ok { color: #13a15c; }
-    .now { background: #ffe56a; border-radius: 6px; padding: 0 2px; }
-    .yet { color: #bbb; }
+      .play {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 92px minmax(0, 720px);
+        justify-content: center;
+        gap: 24px;
+        padding: 24px 24px 16px;
+      }
+      .rail {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        padding-top: 8px;
+      }
+      .dot {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        color: #222;
+      }
+      .thread {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .salary {
+        align-self: end;
+        background: #fff;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-family: Outfit, sans-serif;
+        font-weight: 800;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      }
+      .bubble {
+        background: #fff;
+        border-radius: 22px;
+        padding: 14px 16px;
+        margin: 10px 0;
+        box-shadow: 0 8px 24px rgba(34, 20, 70, 0.06);
+      }
+      .bubble.them {
+        border-left: 8px solid #7b5cff;
+      }
+      .bubble.me {
+        border-left: 8px solid #7cffb2;
+        margin-left: 48px;
+      }
+      .who {
+        font-size: 12px;
+        color: #777;
+        font-weight: 800;
+      }
+      .typebox {
+        margin-top: auto;
+        background: #fff;
+        border-radius: 28px;
+        padding: 16px;
+        box-shadow: 0 16px 40px rgba(123, 92, 255, 0.16);
+      }
+      .target {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .roma {
+        font-family: Outfit, sans-serif;
+        margin-top: 8px;
+      }
+      .ok {
+        color: #13a15c;
+      }
+      .now {
+        background: #ffe56a;
+        border-radius: 6px;
+        padding: 0 2px;
+      }
+      .yet {
+        color: #bbb;
+      }
 
-    .plain { height: 100%; overflow: auto; padding: 32px; }
-    .wrap { max-width: 860px; margin: 0 auto; }
-    .yen { font-family: Outfit, sans-serif; font-size: 68px; margin: 8px 0; }
-    .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .tile {
-      background: #fff;
-      border-radius: 20px;
-      padding: 16px;
-    }
-    .tile b { font-family: Outfit, sans-serif; font-size: 28px; }
-    .panel { background: #fff; border-radius: 24px; padding: 18px; margin: 12px 0; }
-  </style>
-</head>
-<body>
-  <div class="mockbar">
-    <b>C · Color Thread</b>
-    <div class="tabs">
-      <button class="active" data-screen="title">タイトル</button>
-      <button data-screen="play">プレイ</button>
-      <button data-screen="result">結果</button>
-      <button data-screen="analysis">分析</button>
-    </div>
-    <a href="index.html" style="font-weight:800;color:#7b5cff;">一覧へ</a>
-  </div>
-
-  <section class="screen active" id="title">
-    <div class="title">
-      <div class="hero">
-        <div style="font-weight:800;color:#7b5cff;">トラブルベースの昼</div>
-        <h1>返信打</h1>
-        <p>スレッドが流れてくる。ローマ字で返して、年収を積み上げる。</p>
-        <div class="cards">
-          <div class="card"><b>初級</b><br>新米エンジニア</div>
-          <div class="card"><b>中級</b><br>慣れてきた人</div>
-          <div class="card"><b>上級</b><br>つよつよ</div>
-        </div>
-        <button class="cta" data-goto="play">スレッドを開く</button>
+      .plain {
+        height: 100%;
+        overflow: auto;
+        padding: 32px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+      .yen {
+        font-family: Outfit, sans-serif;
+        font-size: 68px;
+        margin: 8px 0;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .tile {
+        background: #fff;
+        border-radius: 20px;
+        padding: 16px;
+      }
+      .tile b {
+        font-family: Outfit, sans-serif;
+        font-size: 28px;
+      }
+      .panel {
+        background: #fff;
+        border-radius: 24px;
+        padding: 18px;
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mockbar">
+      <b>C · Color Thread</b>
+      <div class="tabs">
+        <button class="active" data-screen="title">タイトル</button>
+        <button data-screen="play">プレイ</button>
+        <button data-screen="result">結果</button>
+        <button data-screen="analysis">分析</button>
       </div>
+      <a href="index.html" style="font-weight: 800; color: #7b5cff">一覧へ</a>
     </div>
-  </section>
 
-  <section class="screen" id="play">
-    <div class="play">
-      <div class="rail">
-        <div class="dot" style="background:#ffe56a">#</div>
-        <div class="dot" style="background:#7b5cff;color:#fff">開</div>
-        <div class="dot" style="background:#ff5aa5;color:#fff">急</div>
-        <div class="dot" style="background:#7cffb2">CS</div>
+    <section class="screen active" id="title">
+      <div class="title">
+        <div class="hero">
+          <div style="font-weight: 800; color: #7b5cff">トラブルベースの昼</div>
+          <h1>返信打</h1>
+          <p>スレッドが流れてくる。ローマ字で返して、年収を積み上げる。</p>
+          <div class="cards">
+            <div class="card"><b>初級</b><br />新米エンジニア</div>
+            <div class="card"><b>中級</b><br />慣れてきた人</div>
+            <div class="card"><b>上級</b><br />つよつよ</div>
+          </div>
+          <button class="cta" data-goto="play">スレッドを開く</button>
+        </div>
       </div>
-      <div class="thread">
-        <div class="salary">推定年収  ¥2,480,000</div>
-        <div class="bubble them">
-          <div class="who">佐藤 · PM · #web-app-dev</div>
-          PR #123 のレビューお願いできますか？今日中だと超助かります。
+    </section>
+
+    <section class="screen" id="play">
+      <div class="play">
+        <div class="rail">
+          <div class="dot" style="background: #ffe56a">#</div>
+          <div class="dot" style="background: #7b5cff; color: #fff">開</div>
+          <div class="dot" style="background: #ff5aa5; color: #fff">急</div>
+          <div class="dot" style="background: #7cffb2">CS</div>
         </div>
-        <div class="bubble me">
-          <div class="who">あなた</div>
-          確認します。少々お待ちください。先にハートリアクトだけ置いときます。
-        </div>
-        <div class="bubble them">
-          <div class="who">高橋 · QA</div>
-          @you stg の決済、タイムアウト増えてます。再現はまだです。
-        </div>
-        <div class="typebox">
-          <div class="target">見ます。一旦切り分けして、<b>#incident</b> に共有します。僕の勘ですがキャッシュが悪さしてそうです（勘です）。</div>
-          <div class="roma">
-            <span class="ok">mimasu. ittan kiriwake site, #incident ni</span>
-            <span class="now">k</span>
-            <span class="yet">youyuu simasu. boku no kan desuga...</span>
+        <div class="thread">
+          <div class="salary">推定年収 ¥2,480,000</div>
+          <div class="bubble them">
+            <div class="who">佐藤 · PM · #web-app-dev</div>
+            PR #123 のレビューお願いできますか？今日中だと超助かります。
+          </div>
+          <div class="bubble me">
+            <div class="who">あなた</div>
+            確認します。少々お待ちください。先にハートリアクトだけ置いときます。
+          </div>
+          <div class="bubble them">
+            <div class="who">高橋 · QA</div>
+            @you stg の決済、タイムアウト増えてます。再現はまだです。
+          </div>
+          <div class="typebox">
+            <div class="target">
+              見ます。一旦切り分けして、<b>#incident</b>
+              に共有します。僕の勘ですがキャッシュが悪さしてそうです（勘です）。
+            </div>
+            <div class="roma">
+              <span class="ok">mimasu. ittan kiriwake site, #incident ni</span>
+              <span class="now">k</span>
+              <span class="yet">youyuu simasu. boku no kan desuga...</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="screen" id="result">
-    <div class="plain">
-      <div class="wrap">
-        <div style="color:#7b5cff;font-weight:800;">今回の評価</div>
-        <div class="yen">¥4,260,000</div>
-        <p>中級 · 慣れてきたエンジニア / 9通 / 90秒</p>
-        <div class="row">
-          <div class="tile">速度<br><b>412</b></div>
-          <div class="tile">正確性<br><b>96%</b></div>
-          <div class="tile">ミス<br><b>11</b></div>
-          <div class="tile">最大連続<br><b>86</b></div>
+    <section class="screen" id="result">
+      <div class="plain">
+        <div class="wrap">
+          <div style="color: #7b5cff; font-weight: 800">今回の評価</div>
+          <div class="yen">¥4,260,000</div>
+          <p>中級 · 慣れてきたエンジニア / 9通 / 90秒</p>
+          <div class="row">
+            <div class="tile">速度<br /><b>412</b></div>
+            <div class="tile">正確性<br /><b>96%</b></div>
+            <div class="tile">ミス<br /><b>11</b></div>
+            <div class="tile">最大連続<br /><b>86</b></div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="screen" id="analysis">
-    <div class="plain">
-      <div class="wrap">
-        <h2>入力の癖</h2>
-        <div class="panel">
-          <b>苦手キー</b>
-          <p>@ 22.9%　L 9.0%　# 8.3%</p>
-        </div>
-        <div class="panel">
-          <b>苦手な指</b>
-          <p>右薬指がいちばん滑っています。</p>
-        </div>
-        <div class="panel">
-          <b>苦手な動き</b>
-          <p>S → H、R → E</p>
+    <section class="screen" id="analysis">
+      <div class="plain">
+        <div class="wrap">
+          <h2>入力の癖</h2>
+          <div class="panel">
+            <b>苦手キー</b>
+            <p>@ 22.9%　L 9.0%　# 8.3%</p>
+          </div>
+          <div class="panel">
+            <b>苦手な指</b>
+            <p>右薬指がいちばん滑っています。</p>
+          </div>
+          <div class="panel">
+            <b>苦手な動き</b>
+            <p>S → H、R → E</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <script>
-    const show = (id) => {
-      document.querySelectorAll(".screen").forEach((el) => el.classList.toggle("active", el.id === id));
-      document.querySelectorAll(".tabs button").forEach((el) => el.classList.toggle("active", el.dataset.screen === id));
-    };
-    document.querySelectorAll("[data-screen]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.screen)));
-    document.querySelectorAll("[data-goto]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.goto)));
-  </script>
-</body>
+    <script>
+      const show = (id) => {
+        document
+          .querySelectorAll(".screen")
+          .forEach((el) => el.classList.toggle("active", el.id === id));
+        document
+          .querySelectorAll(".tabs button")
+          .forEach((el) => el.classList.toggle("active", el.dataset.screen === id));
+      };
+      document
+        .querySelectorAll("[data-screen]")
+        .forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.screen)));
+      document
+        .querySelectorAll("[data-goto]")
+        .forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.goto)));
+    </script>
+  </body>
 </html>

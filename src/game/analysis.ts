@@ -88,7 +88,12 @@ function bump(map: Record<string, KeyStat>, id: string, miss: boolean) {
   map[id] = cur;
 }
 
-export function recordKey(analysis: PlayAnalysis, key: string, miss: boolean, prevKey: string | null) {
+export function recordKey(
+  analysis: PlayAnalysis,
+  key: string,
+  miss: boolean,
+  prevKey: string | null,
+) {
   const id = key.length === 1 ? key : key;
   bump(analysis.keys, id, miss);
   bump(analysis.fingers, fingerOf(id), miss);

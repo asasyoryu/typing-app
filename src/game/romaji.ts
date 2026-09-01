@@ -1,6 +1,4 @@
-export type Segment =
-  | { type: "lit"; text: string }
-  | { type: "kana"; options: string[] };
+export type Segment = { type: "lit"; text: string } | { type: "kana"; options: string[] };
 
 const DIGRAPHS: Record<string, string[]> = {
   きゃ: ["kya", "kixya", "kilya"],
@@ -148,7 +146,10 @@ export function parseReading(reading: string): Segment[] {
         const c = firstConsonant(opt);
         return c && /[bcdfghjklmnpqrstvwxyz]/.test(c) ? [c + opt] : [];
       });
-      segs.push({ type: "kana", options: [...doubled, ...options.map((o) => `xtu${o}`), ...options.map((o) => `ltu${o}`)] });
+      segs.push({
+        type: "kana",
+        options: [...doubled, ...options.map((o) => `xtu${o}`), ...options.map((o) => `ltu${o}`)],
+      });
       pendingSokuon = false;
       return;
     }
@@ -174,7 +175,8 @@ export function parseReading(reading: string): Segment[] {
     if (KANA[h1]) {
       if (h1 === "ー" && segs.length > 0) {
         const prev = segs[segs.length - 1];
-        const vowels = prev?.type === "kana" ? prev.options.map((o) => o.at(-1) ?? "").filter(Boolean) : [];
+        const vowels =
+          prev?.type === "kana" ? prev.options.map((o) => o.at(-1) ?? "").filter(Boolean) : [];
         pushKana(["-", ...vowels]);
       } else {
         pushKana(KANA[h1]);
@@ -187,7 +189,21 @@ export function parseReading(reading: string): Segment[] {
       segs.push({ type: "kana", options: ["xtu", "ltu", "xtsu"] });
       pendingSokuon = false;
     }
-    segs.push({ type: "lit", text: raw1 });
+    if (raw1 === "。" || raw1 === "．") {
+      segs.push({ type: "kana", options: [".", "。"] });
+    } else if (raw1 === "、" || raw1 === "，") {
+      segs.push({ type: "kana", options: [",", "、"] });
+    } else if (raw1 === "！" || raw1 === "!") {
+      segs.push({ type: "kana", options: ["!", "！"] });
+    } else if (raw1 === "？" || raw1 === "?") {
+      segs.push({ type: "kana", options: ["?", "？"] });
+    } else if (raw1 === "「") {
+      segs.push({ type: "kana", options: ["[", "「"] });
+    } else if (raw1 === "」") {
+      segs.push({ type: "kana", options: ["]", "」"] });
+    } else {
+      segs.push({ type: "lit", text: raw1 });
+    }
     i += 1;
   }
 
@@ -199,7 +215,7 @@ export function parseReading(reading: string): Segment[] {
 
 export function expectedChars(reading: string): string {
   return parseReading(reading)
-    .map((seg) => (seg.type === "lit" ? seg.text : seg.options[0] ?? ""))
+    .map((seg) => (seg.type === "lit" ? seg.text : (seg.options[0] ?? "")))
     .join("");
 }
 
@@ -227,7 +243,14 @@ export function createMatcher(reading: string) {
     feed(ch: string): MatchResult {
       if (segIndex >= segs.length) return "complete";
       const next = options.filter((opt) => opt[pos] === ch);
-      if (next.length === 0) return "miss";
+      if (next.length === 0) {
+        if (options.some((opt) => pos >= opt.length)) {
+          segIndex += 1;
+          load();
+          return this.feed(ch);
+        }
+        return "miss";
+      }
       options = next;
       pos += 1;
       typed += ch;

@@ -18,8 +18,13 @@ export function calcPay(input: {
   misses: number;
 }): number {
   const len = [...input.reply].length;
-  const symbols = (input.reply.match(/[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9\s]/gu) ?? []).length;
-  const base = BASE[input.difficulty] * (1 + Math.min(0.35, Math.max(0, len - 16) / 180)) * (1 + Math.min(0.2, symbols * 0.03));
+  const symbols = (
+    input.reply.match(/[^\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}a-zA-Z0-9\s]/gu) ?? []
+  ).length;
+  const base =
+    BASE[input.difficulty] *
+    (1 + Math.min(0.35, Math.max(0, len - 16) / 180)) *
+    (1 + Math.min(0.2, symbols * 0.03));
   const cps = input.hits / Math.max(0.4, input.elapsedMs / 1000);
   const speed = clamp(1 + (cps - 2.2) * 0.16, 1, 1.5);
   const acc = input.hits / Math.max(1, input.hits + input.misses);

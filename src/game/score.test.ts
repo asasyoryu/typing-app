@@ -10,7 +10,12 @@ describe("score", () => {
   });
 
   it("lowers pay when there are many misses", () => {
-    const base = { difficulty: "beginner" as const, reply: "確認します。", elapsedMs: 4000, hits: 20 };
+    const base = {
+      difficulty: "beginner" as const,
+      reply: "確認します。",
+      elapsedMs: 4000,
+      hits: 20,
+    };
     expect(calcPay({ ...base, misses: 12 })).toBeLessThan(calcPay({ ...base, misses: 0 }));
   });
 

@@ -9,3 +9,4 @@ dist/
 worker-configuration.d.ts
 .DS_Store
 coverage/
+*.tsbuildinfo

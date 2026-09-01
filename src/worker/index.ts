@@ -1,6 +1,12 @@
 import { Hono } from "hono";
 import { mergeAnalysis } from "../game/analysis.ts";
-import type { Difficulty, PlayAnalysis, PlayResult, Puzzle, StatsResponse } from "../shared/types.ts";
+import type {
+  Difficulty,
+  PlayAnalysis,
+  PlayResult,
+  Puzzle,
+  StatsResponse,
+} from "../shared/types.ts";
 
 type AppEnv = { Bindings: Env };
 
