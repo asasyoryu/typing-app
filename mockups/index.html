@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>返信打 UI 方向性 — 比較</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&family=Inter:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans JP", sans-serif;
+      background: #f6f2ff;
+      color: #1d1c1d;
+      padding: 32px;
+    }
+    h1 { font-size: 36px; margin: 0 0 8px; }
+    .lead { color: #5d5670; max-width: 720px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 28px; }
+    article {
+      background: #fff;
+      border: 3px solid #1d1c1d;
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+    }
+    article:nth-child(1) { box-shadow: 8px 8px 0 #7b5cff; }
+    article:nth-child(2) { box-shadow: 8px 8px 0 #ff2ea6; }
+    article:nth-child(3) { box-shadow: 8px 8px 0 #20e6ff; }
+    h2 { margin: 0 0 8px; font-size: 22px; }
+    p { color: #444; line-height: 1.6; }
+    ul { padding-left: 18px; color: #333; }
+    a.btn {
+      margin-top: auto;
+      display: inline-block;
+      text-decoration: none;
+      background: #1d1c1d;
+      color: #fff;
+      font-weight: 800;
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+    iframe {
+      width: 100%;
+      height: 52vh;
+      border: 3px solid #1d1c1d;
+      border-radius: 16px;
+      background: #fff;
+      margin-top: 14px;
+    }
+    .preview { margin-top: 36px; }
+    label { font-weight: 800; margin-right: 8px; }
+    select { font: inherit; padding: 6px 8px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>返信打 · UI 方向性</h1>
+  <p class="lead">
+    仕様は同じです。見た目の距離だけ変えています。
+    カードから各パターンを開き、上のタブでタイトル / プレイ / 結果 / 分析を切り替えてください。
+  </p>
+
+  <div class="grid">
+    <article>
+      <h2>A. Slack Pop Office</h2>
+      <p>Slack のワークスペース感をいちばん残す。白本文 + 紫サイドバー + ビビッドな人。</p>
+      <ul>
+        <li>チャンネル一覧がある</li>
+        <li>入力欄は Slack の投稿欄に近い</li>
+        <li>年収はヘッダーのバッジ</li>
+      </ul>
+      <a class="btn" href="pattern-a.html">A を開く</a>
+    </article>
+    <article>
+      <h2>B. Salary Arcade</h2>
+      <p>Slack 風のまま、年収とコンボをゲーム画面らしく前面に出す。</p>
+      <ul>
+        <li>太いフチ、丸ゴシック</li>
+        <li>HUD と獲得額の横柱</li>
+        <li>結果がクリア演出</li>
+      </ul>
+      <a class="btn" href="pattern-b.html">B を開く</a>
+    </article>
+    <article>
+      <h2>C. Color Thread</h2>
+      <p>チャンネルを薄くし、スレッドと入力欄を主役にする。白 + 色面。</p>
+      <ul>
+        <li>吹き出し中心</li>
+        <li>余白多め</li>
+        <li>Slack っぽさは一番弱い</li>
+      </ul>
+      <a class="btn" href="pattern-c.html">C を開く</a>
+    </article>
+  </div>
+
+  <div class="preview">
+    <label for="pick">この場で見る</label>
+    <select id="pick">
+      <option value="pattern-a.html">A. Slack Pop Office</option>
+      <option value="pattern-b.html">B. Salary Arcade</option>
+      <option value="pattern-c.html">C. Color Thread</option>
+    </select>
+    <iframe id="frame" src="pattern-a.html" title="プレビュー"></iframe>
+  </div>
+  <script>
+    const pick = document.getElementById("pick");
+    const frame = document.getElementById("frame");
+    pick.addEventListener("change", () => { frame.src = pick.value; });
+  </script>
+</body>
+</html>

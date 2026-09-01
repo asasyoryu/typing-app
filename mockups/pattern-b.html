@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pattern B — Salary Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700;800&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #19151c;
+      --pink: #ff2ea6;
+      --orange: #ff7a00;
+      --yellow: #ffe14a;
+      --lime: #b6ff3b;
+      --cyan: #20e6ff;
+      --blue: #3a6bff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "M PLUS Rounded 1c", "Fredoka", sans-serif;
+      background: #1b1224;
+      color: var(--ink);
+    }
+    .mockbar {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: #120c18;
+      color: #fff;
+    }
+    .tabs { display: flex; gap: 8px; }
+    .tabs button {
+      border: 0; background: #2a2036; color: #fff; padding: 8px 12px;
+      border-radius: 10px; font-weight: 800; cursor: pointer;
+    }
+    .tabs button.active { background: var(--yellow); color: #19151c; }
+    a { color: #fff; font-weight: 800; }
+    .screen { display: none; height: calc(100vh - 52px); }
+    .screen.active { display: block; }
+
+    .title {
+      height: 100%;
+      background:
+        repeating-linear-gradient(135deg, #ff2ea6 0 18px, #ff7a00 18px 36px, #ffe14a 36px 54px, #20e6ff 54px 72px);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .marquee {
+      width: min(920px, 100%);
+      background: #fff;
+      border: 6px solid #19151c;
+      border-radius: 18px;
+      box-shadow: 0 0 0 8px #fff, 12px 14px 0 #19151c;
+      padding: 28px 30px;
+    }
+    h1 { font-family: Fredoka, sans-serif; font-size: 68px; margin: 0 0 6px; }
+    .diffs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
+    .diff {
+      border: 4px solid #19151c;
+      border-radius: 14px;
+      padding: 14px;
+      font-weight: 800;
+    }
+    .diff:nth-child(1) { background: var(--lime); }
+    .diff:nth-child(2) { background: var(--yellow); }
+    .diff:nth-child(3) { background: var(--pink); color: #fff; }
+    .go {
+      background: #19151c;
+      color: var(--yellow);
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 22px;
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .play {
+      height: 100%;
+      display: grid;
+      grid-template-columns: 200px minmax(0, 1fr) 180px;
+      background: #fff7fb;
+    }
+    @media (max-width: 1100px) {
+      .play { grid-template-columns: 180px minmax(0, 1fr); }
+      .right { display: none; }
+    }
+    .side {
+      background: #19151c;
+      color: #fff;
+      padding: 16px 12px;
+    }
+    .ch { padding: 8px; border-radius: 10px; }
+    .ch.on { background: var(--pink); }
+    .hud {
+      background: var(--yellow);
+      border-bottom: 5px solid #19151c;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .yen {
+      font-family: Fredoka, sans-serif;
+      font-size: 34px;
+    }
+    .combo {
+      background: var(--pink);
+      color: #fff;
+      border: 3px solid #19151c;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-weight: 800;
+    }
+    .col { display: grid; grid-template-rows: auto 1fr auto; min-width: 0; }
+    .msg {
+      margin: 12px 16px;
+      border: 4px solid #19151c;
+      border-radius: 16px;
+      padding: 12px;
+      background: #fff;
+    }
+    .msg.me { background: #e7fff1; }
+    .msg.now { background: #fff3c4; box-shadow: 6px 6px 0 #19151c; }
+    .av { font-weight: 800; }
+    .right {
+      background: #fff;
+      border-left: 5px solid #19151c;
+      padding: 14px;
+    }
+    .pop {
+      background: var(--cyan);
+      border: 4px solid #19151c;
+      border-radius: 14px;
+      padding: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .composer {
+      margin: 0 16px 16px;
+      border: 5px solid #19151c;
+      border-radius: 18px;
+      background: #fff;
+      padding: 12px;
+    }
+    .roma { font-family: Fredoka, sans-serif; font-size: 18px; }
+    .ok { color: #128a3e; }
+    .now { background: var(--lime); }
+    .yet { color: #aaa; }
+
+    .plain { height: 100%; overflow: auto; padding: 24px; background: #fff3c9; }
+    .hero {
+      background: #fff;
+      border: 6px solid #19151c;
+      box-shadow: 10px 10px 0 var(--pink);
+      border-radius: 18px;
+      padding: 22px;
+    }
+    .big { font-family: Fredoka, sans-serif; font-size: 72px; margin: 8px 0; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 14px; }
+    .stat { background: #fff; border: 4px solid #19151c; border-radius: 14px; padding: 12px; }
+    .stat:nth-child(odd) { background: var(--cyan); }
+    .stat:nth-child(even) { background: var(--lime); }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border-bottom: 2px solid #19151c; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <div class="mockbar">
+    <b>B · Salary Arcade</b>
+    <div class="tabs">
+      <button class="active" data-screen="title">タイトル</button>
+      <button data-screen="play">プレイ</button>
+      <button data-screen="result">結果</button>
+      <button data-screen="analysis">分析</button>
+    </div>
+    <a href="index.html">一覧へ</a>
+  </div>
+
+  <section class="screen active" id="title">
+    <div class="title">
+      <div class="marquee">
+        <div style="font-weight:800;">今日もどこかが落ちてる</div>
+        <h1>返信打 Arcade</h1>
+        <p>90秒でチャットを打ち返せ。年収がスロットみたいに伸びる。</p>
+        <div class="diffs">
+          <div class="diff">初級<br>新米エンジニア</div>
+          <div class="diff">中級<br>慣れてきた人</div>
+          <div class="diff">上級<br>つよつよ</div>
+        </div>
+        <button class="go" data-goto="play">START !!</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="play">
+    <div class="play">
+      <aside class="side">
+        <div style="font-size:20px;font-weight:800;margin-bottom:12px;">トラブルベース</div>
+        <div class="ch"># general</div>
+        <div class="ch on"># web-app-dev</div>
+        <div class="ch"># incident</div>
+        <div class="ch"># customer</div>
+      </aside>
+      <div class="col">
+        <div class="hud">
+          <div>
+            <div style="font-size:12px;font-weight:800;">GAME内 年収</div>
+            <div class="yen">¥ 2,480,000</div>
+          </div>
+          <div>
+            <span class="combo">COMBO x24</span>
+            <span class="combo" style="background:#20e6ff;color:#19151c;">31.4s</span>
+          </div>
+        </div>
+        <div>
+          <div class="msg">
+            <div class="av">佐藤 · PM</div>
+            PR #123 のレビューお願いできますか？
+          </div>
+          <div class="msg me">
+            <div class="av">あなた</div>
+            確認します。少々お待ちください。先にハートリアクトだけ置いときます。
+          </div>
+          <div class="msg now">
+            <div class="av">高橋 · QA　いまの相手</div>
+            @you stg の決済、タイムアウト増えてます。
+          </div>
+        </div>
+        <div class="composer">
+          <div style="font-weight:800;margin-bottom:6px;">見ます。一旦切り分けして、#incident に共有します。僕の勘ですがキャッシュが悪さしてそうです（勘です）。</div>
+          <div class="roma">
+            <span class="ok">mimasu. ittan kiriwake site, #incident ni</span><span class="now">k</span><span class="yet">youyuu simasu...</span>
+          </div>
+        </div>
+      </div>
+      <aside class="right">
+        <div class="pop">+ ¥186,000<br>ナイス切り分け</div>
+        <div class="pop" style="background:var(--lime);">速度ボーナス x1.32</div>
+        <div class="pop" style="background:var(--yellow);">正確性 96%</div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen" id="result">
+    <div class="plain">
+      <div class="hero">
+        <div style="font-weight:800;">CLEAR!! 人事から連絡来そう</div>
+        <div class="big">¥4,260,000</div>
+        <div>中級クリア　返信 9 通</div>
+        <div class="stats">
+          <div class="stat">速度<br><b>412</b></div>
+          <div class="stat">正確性<br><b>96%</b></div>
+          <div class="stat">ミス<br><b>11</b></div>
+          <div class="stat">最大連続<br><b>86</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="analysis">
+    <div class="plain">
+      <div class="hero">
+        <h2 style="margin-top:0;">にがてマップ</h2>
+        <p>数字が大きいところを、次の 90 秒で潰しにいこう。</p>
+        <table>
+          <tr><th>苦手キー</th><th>ミス率</th></tr>
+          <tr><td>@</td><td>22.9%</td></tr>
+          <tr><td>L</td><td>9.0%</td></tr>
+        </table>
+        <p><b>苦手な指:</b> 右薬指 11.2%　/　右小指 7.4%</p>
+        <p><b>苦手な動き:</b> S → H　18.8%</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const show = (id) => {
+      document.querySelectorAll(".screen").forEach((el) => el.classList.toggle("active", el.id === id));
+      document.querySelectorAll(".tabs button").forEach((el) => el.classList.toggle("active", el.dataset.screen === id));
+    };
+    document.querySelectorAll("[data-screen]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.screen)));
+    document.querySelectorAll("[data-goto]").forEach((btn) => btn.addEventListener("click", () => show(btn.dataset.goto)));
+  </script>
+</body>
+</html>
